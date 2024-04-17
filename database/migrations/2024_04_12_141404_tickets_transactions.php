@@ -1,0 +1,36 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('tickets_transactions', function (Blueprint $table) {
+            $table->bigIncrements('ticket_transaction_id');
+            $table->foreignId('ticket_id')->constrained()->references('id')->on('tickets');
+            $table->foreignId('user_id')->constrained()->references('id')->on('users');
+            $table->integer('quantity');
+            $table->integer('total_price');
+            $table->enum('status', ['pending', 'success', 'cancel']);
+            $table->string('payment_url');
+            $table->string('payment_type');
+            $table->string('payment_code');
+            $table->timestamp('transaction_time');
+            $table->timestamps();
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('tickets_transactions');
+    }
+};
