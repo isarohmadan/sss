@@ -22,7 +22,7 @@ return new class extends Migration
             $table->integer('stock')->unsigned()->default(0);
             $table->enum('condition', ['used', 'new']);
             $table->enum('size', [8, 10, 12]);
-            $table->decimal('price', 8, 2);
+            $table->integer('price')->unsigned();
             $table->text('genre')->nullable();
             $table->timestamps();
         });
@@ -32,22 +32,24 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->text('tag');
-            $table->integer('stock')->unsigned()->default(0);
-            $table->decimal('price', 8, 2);
-            $table->enum('size', ['S', 'M', 'L', 'XL', 'XXL']);
+            $table->string('merch_cover');
+            $table->json('images')->nullable();
+            $table->integer('price')->nullable();
+            $table->json('merch_size')->nullable();
             $table->timestamps();
         });
-        
+
+        // Schema::create('merch_size', function(Blueprint $table){
+        //     $table->id();
+        //     $table->foreignId('merch_id')->constrained()->references('id')->on('merch')->onDelete('cascade'); 
+        //     $table->string('name');
+        //     $table->unsignedBigInteger('stock')->default(0);
+        //     $table->timestamps();
+        // });
+                              
         Schema::create('product_vinyl_images', function (Blueprint $table) {
             $table->id();
             $table->foreignId('vinyl_id')->constrained()->references('id')->on('vinyl'); 
-            $table->string('image_path');
-            $table->timestamps();
-        });
-        
-        Schema::create('product_merch_images', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('merch_id')->constrained()->references('id')->on('merch'); 
             $table->string('image_path');
             $table->timestamps();
         });
@@ -90,8 +92,9 @@ return new class extends Migration
         Schema::dropIfExists('vinyl');
         Schema::dropIfExists('merch');
         Schema::dropIfExists('product_vinyl_images');
-        Schema::dropIfExists('product_merch_images');
+        // Schema::dropIfExists('product_merch_images');
         Schema::dropIfExists('vinyl_transactions');
         Schema::dropIfExists('merch_transactions');
+        // Schema::dropIfExists('merch_size');
     }
 };
