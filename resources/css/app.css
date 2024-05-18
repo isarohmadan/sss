@@ -10,6 +10,7 @@
 *{
     font-family: 'Montserrat', sans-serif;
     color: #5f6263;
+    scroll-behavior: smooth;
     /* line-height: 35px; */
 
 }
@@ -129,7 +130,7 @@
 
 
 #about-caption{
-    line-height: 26px;
+    line-height: 20px;
 }
 .about-wrapper {
     top: 40%;
@@ -142,8 +143,41 @@
 
 } 
 .card-wrapper:hover .card img{
-  transform: scale(1.1);
+  transform: scale(1.03);
   transition: 0.5s;
+}
+.sidebar {
+  transition: transform 0.3s ease-in-out;
+  transform: translateX(-100%);
+}
+
+.sidebar.show {
+  transform: translateX(0%);
+}
+
+.sidebar-items{
+  font-size: bold;
+}
+
+
+/* Tambahkan properti transisi ke sub-menu */
+.sidebar ul li ul {
+  transition: max-height 0.5s ease-in-out, opacity 0.1s ease-in-out;
+  max-height: 0;
+  opacity: 0;
+  overflow: hidden;
+}
+
+/* Kelas untuk menunjukkan sub-menu */
+.sidebar ul li ul.show {
+  max-height: 500px; /* Sesuaikan dengan tinggi konten sub-menu Anda */
+  opacity: 1;
+}
+
+@media (min-width: 768px) {
+  #about-caption {
+    line-height: 26px;
+  }
 }
 
 

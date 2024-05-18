@@ -8,3 +8,5 @@ Route::get('/Gallery', [UiController::class,'gallery_category'])->name(('gallery
 Route::get('/Gallery/{type}', [UiController::class,'gallery_picture'])->name(('gallery_picture'));
 Route::get('/Vinyls', [UiController::class,'vinyl_gallery'])->name(('vinyl_gallery'));
 Route::get('/Merch_SSS', [UiController::class,'gallery_merch'])->name(('gallery_merch'));
+Route::get('/Merch_Vintage', [UiController::class,'gallery_merch'])->name(('gallery_merch'));
+Route::get('/Product/{type}', [UiController::class,'product_specific'])->name(('product_specific'));

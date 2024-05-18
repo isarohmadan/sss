@@ -10,13 +10,15 @@ class UiController extends Controller
 {
     public function index()
     {
-        return view('users.user_index');
+        return view('users.user_about');
     }
     public function gallery_category()
     {
         return view('users.user_gallery_category');
     }   
-
+    public function product_specific(){
+        return view('users.specific_product');
+    }
     public function gallery_merch(Request $request){
         $request = $request->query('type');
         $images = [];
