@@ -1,0 +1,1 @@
+<img src="{{ asset('storage/local/SSS logo.png')}}" alt="Logo" class="h-10">

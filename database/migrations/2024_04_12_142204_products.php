@@ -26,18 +26,32 @@ return new class extends Migration
             $table->text('genre')->nullable();
             $table->timestamps();
         });
-        
-        Schema::create('merch', function (Blueprint $table) {
-            $table->id();
-            $table->string('title');
+
+        Schema::create('merch_category', function (Blueprint $table) {
+            $table->id('id_category');
+            $table->string('name_category');
+            $table->string('slug_category');
             $table->text('description');
-            $table->text('tag');
-            $table->string('merch_cover');
-            $table->json('images')->nullable();
-            $table->integer('price')->nullable();
-            $table->json('merch_size')->nullable();
             $table->timestamps();
         });
+        
+        Schema::create('merch', function (Blueprint $table) {
+            $table->uuid('id_merch')->primary();
+            $table->string('title');
+            $table->string('slug_merch');
+            $table->text('description');
+            $table->text('tag');
+            $table->string('merch_cover_front');
+            $table->string('merch_cover_back');
+            $table->integer('price')->nullable();
+            $table->json('merch_size')->nullable();
+            $table->foreignId('category_id')->nullable()->constrained()->references('id_category')->on('merch_category')->onDelete('set null');
+            $table->timestamps();
+        });
+        
+        
+
+
 
         // Schema::create('merch_size', function(Blueprint $table){
         //     $table->id();
@@ -69,19 +83,19 @@ return new class extends Migration
             $table->timestamps();
         });
         
-        Schema::create('merch_transactions', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('merch_id')->constrained()->references('id')->on('merch');
-            $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')->references('id')->on('users');
-            $table->integer('quantity')->unsigned();
-            $table->decimal('total_price', 8, 2);
-            $table->string('payment_url');
-            $table->string('payment_type');
-            $table->string('payment_code');
-            $table->timestamp('transaction_time');
-            $table->timestamps();
-        });
+        // Schema::create('merch_transactions', function (Blueprint $table) {
+        //     $table->id();
+        //     $table->foreignId('merch_id')->constrained()->references('id')->on('merch');
+        //     $table->unsignedBigInteger('user_id');
+        //     $table->foreign('user_id')->references('id')->on('users');
+        //     $table->integer('quantity')->unsigned();
+        //     $table->decimal('total_price', 8, 2);
+        //     $table->string('payment_url');
+        //     $table->string('payment_type');
+        //     $table->string('payment_code');
+        //     $table->timestamp('transaction_time');
+        //     $table->timestamps();
+        // });
     }
 
     /**
@@ -94,7 +108,8 @@ return new class extends Migration
         Schema::dropIfExists('product_vinyl_images');
         // Schema::dropIfExists('product_merch_images');
         Schema::dropIfExists('vinyl_transactions');
-        Schema::dropIfExists('merch_transactions');
+        // Schema::dropIfExists('merch_transactions');
+        Schema::dropIfExists('merch_category');
         // Schema::dropIfExists('merch_size');
     }
 };

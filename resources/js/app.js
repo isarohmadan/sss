@@ -1,3 +1,4 @@
+import DOMPurify from 'dompurify';
 const dropdown_gallery = document.querySelector('#gallery-event-parent');
 const dropdown_vinyl = document.querySelector('#dropdown-vinyls-parent');
 const dropdown_menu_vinyl = document.querySelector('#dropdown-menu-vinyls');
@@ -5,6 +6,77 @@ const dropdown_menu_gallery = document.querySelector('#dropdown-menu-gallery');
 const dropdown_merch = document.querySelector('#dropdown-merch-parent');
 const dropdown_menu_merch = document.querySelector('#dropdown-menu-merch');
 const youtube = document.querySelector('#youtube'); 
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const preloader = document.querySelector('.preloader');
+    const content = document.querySelector('.content');
+    
+    setTimeout(function() {
+        preloader.style.display = 'none';
+        content.style.opacity = 1;
+    }, 1000); // 2 detik
+
+    document.querySelectorAll('.delete-from-cart').forEach(buttonDelete => {
+        buttonDelete.addEventListener('click', async () => {
+            const productId = buttonDelete.getAttribute('data-product-id');
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            if (!productId) {
+                console.error('Product ID not found');
+                return;
+            }
+    
+            // ButtonDelete disabled and loading
+            preloader.style.display = 'flex';
+            content.style.opacity = 0;
+    
+            try {
+                // Lakukan fetch request untuk menghapus item dari keranjang
+                await fetch('/Cart/Delete', {
+                    method: 'POST', // Ganti dengan 'DELETE' jika itu yang digunakan oleh API Anda
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({
+                        productId: productId
+                    })
+                });
+                return window.location.reload();
+                // Menghapus item dari tampilan
+                
+    
+            }finally {
+                buttonDelete.removeAttribute('disabled');
+                buttonDelete.classList.remove('loading');
+            }
+        });
+    })
+
+document.querySelectorAll('.format-rupiah').forEach(element => {
+    // Contoh penggunaan
+    const sanitizedElement = DOMPurify.sanitize(element.innerHTML)
+    element.innerHTML = formatRupiah(sanitizedElement);
+});
+
+
+});
+
+
+function  formatRupiah(angka) {
+    var numberString = angka.toString(),
+        sisa = numberString.length % 3,
+        rupiah = numberString.substr(0, sisa),
+        ribuan = numberString.substr(sisa).match(/\d{3}/g),
+        separator;
+
+    if (ribuan) {
+        separator = sisa ? '.' : '';
+        rupiah += separator + ribuan.join('.');
+    }
+    return ("Rp "+ rupiah);
+}
+
 
 function showDropdown(key, value) {
     switch (key) {
@@ -61,19 +133,19 @@ dropdown_merch.addEventListener("mouseout", (ev) => {
 });
 
 
-// redirect to youtube method 
-function redirectToYoutube() {
-    window.location.href = "https://www.youtube.com/@SegitigaSamaSisiBali";
-}
+// // redirect to youtube method 
+// function redirectToYoutube() {
+//     window.location.href = "https://www.youtube.com/@SegitigaSamaSisiBali";
+// }
 
 
-youtube.addEventListener("click", (ev) => {
-    redirectToYoutube();
-});
+// youtube.addEventListener("click", (ev) => {
+//     redirectToYoutube();
+// });
 
-youtube.addEventListener('hover',(ev)=>{
-    console.log(ev);
-})
+// youtube.addEventListener('hover',(ev)=>{
+//     console.log(ev);
+// })
 
 
 // sidebar menu 
@@ -112,32 +184,41 @@ youtube.addEventListener('hover',(ev)=>{
 
 
 
-// increment decrement counter
-const decrementButton = document.getElementById('decrement');
-const incrementButton = document.getElementById('increment');
-const quantityInput = document.getElementById('quantity');
 
-decrementButton.addEventListener('click', function () {
-    let currentValue = parseInt(quantityInput.value);
-    if (currentValue > 1) {
-        quantityInput.value = currentValue - 1;
-    }
+// Cart sidebar
+
+const cartButton = document.getElementById('cart-button');
+const cartButtonHidden = document.getElementById('cart-button-hidden');
+const cartSidebar = document.getElementById('sidebar-cart');
+const closeCartSidebar = document.getElementById('sidebar-close-cart');
+
+cartButton.addEventListener('click', function () {
+    cartSidebar.classList.toggle('show');
+});
+cartButtonHidden.addEventListener('click', function () {
+    cartSidebar.classList.toggle('show');
 });
 
-incrementButton.addEventListener('click', function () {
-    let currentValue = parseInt(quantityInput.value);
-    quantityInput.value = currentValue + 1;
+closeCartSidebar.addEventListener('click', function () {
+    cartSidebar.classList.toggle('show');
 });
 
 
+const imageContainer = document.getElementById('merch-container');
+    const zoomImage = document.querySelector('.zoomImage');
 
-// scroll behavior
-const scrollContainer = document.getElementById('scrollContainer');
+    imageContainer.addEventListener('mousemove', function (e) {
+      const rect = imageContainer.getBoundingClientRect();
+      const x = e.clientX - rect.left; // x position within the element
+      const y = e.clientY - rect.top;  // y position within the element
 
-    scrollContainer.addEventListener('scroll', function(event) {
-        // if (event.deltaY != 0) {
-        //     event.preventDefault();
-        //     scrollContainer.scrollLeft += event.deltaY;
-        // }
-        console.log(event);
+      const xPercent = (x / rect.width) * 100;
+      const yPercent = (y / rect.height) * 100;
+
+      zoomImage.style.transformOrigin = `${xPercent}% ${yPercent}%`;
+      zoomImage.style.transform = 'scale(3.5)';
     });
+
+    imageContainer.addEventListener('mouseleave', function () {
+      zoomImage.style.transform = 'scale(1)';
+    })

@@ -4,24 +4,38 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Merch_Category;
+use Illuminate\Support\Str;
+// import ulids
+use Illuminate\Database\Eloquent\Concerns\HasUlids;
 
 
 class Merch extends Model
 {
     protected $table = 'merch';
+    
+    // Primary key bukan 'id'
+    protected $primaryKey = 'id_merch';
+
+    // Primary key adalah tipe string
+    protected $keyType = 'string';
+
+    // Menggunakan UUID, jadi primary key bukan auto-incrementing
+    public $incrementing = false;
+    use HasFactory , HasUlids;
+
+
     protected $casts = [
-        'images' => 'array',
         'merch_size' => 'array',
     ];
 
-    // Mutator
-    public function setImagesAttribute($value)
-    {
-        $validateImages = $this->validateImagesAttribute($value);
-        $this->attributes['images'] = json_encode($validateImages, JSON_UNESCAPED_SLASHES);
 
+    public function merchCategory()
+    {
+        return $this->belongsTo(Merch_Category::class, 'category_id','id_category');
     }
 
+    // Mutator
     public function setMerchSizeAttribute($value)
     {
         $validateMerchSize = $this->validateMerchSizeAttribute($value);
@@ -35,29 +49,37 @@ class Merch extends Model
             $validatedMerchSize[] = [
                 'size' => $size['size'],
                 'stock' => $size['stock'],
-                'merch_id' => $this->id,
             ];
         }
         return $validatedMerchSize;
-    }
-
-    private function validateImagesAttribute($value)
-    {
-        $validatedImages = [];
-
-        foreach ($value as $image) {
-            $validatedImages[] = [
-                'image_path' => $image['image_path'],
-                'image_id' => $this->id,
-            ];
-        }
-        return $validatedImages;
     }
 
 
     public function merch_transaction()
     {
         return $this->hasMany(merch_transaction::class);
+    }
+
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Hook into the creating event to set slug_category
+        static::creating(function ($model) {
+            if (empty($model->slug_merch)) {
+                $model->slug_merch = Str::slug($model->title);
+            }
+        });
+
+           // Hook into the saving event to set slug_category for both creating and updating
+      static::saving(function ($model) {
+          if (!empty($model->slug_merch)) {
+              $model->slug_merch = Str::slug($model->title);
+          }else{
+              $model->slug_merch = Str::slug($model->title);
+          }
+      });
     }
     use HasFactory;
 }

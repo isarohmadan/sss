@@ -1,4 +1,4 @@
-@extends('users.layouts.main')
+@extends('users.layouts.main' , ['navbar_category', $navbar_category])
 
 @section('content')
 <div class="snap-x flex md:h-screen md:overflow-y-hidden no-scrollbar">
@@ -12,7 +12,7 @@
                     </div>
                     <div class="card-body m-3">
                         <h4 class="card-title text-md">Lorem ipsum dolor sit amet consectetur adipisicing elit. Cupiditate</h4>
-                        <p class="text-sm mt-5 font-bold">00000 IDR</p>
+                        <p class="text-sm mt-5 font-bold">0</p>
                     </div>
                 </div>
             </div> 

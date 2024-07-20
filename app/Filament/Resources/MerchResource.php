@@ -19,7 +19,7 @@ class MerchResource extends Resource
 {
     protected static ?string $model = Merch::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-s-shopping-bag';
 
     public static function form(Form $form): Form
     {
@@ -34,6 +34,9 @@ class MerchResource extends Resource
                     ->required(),
                 Forms\Components\Textarea::make('description')
                     ->label('Description')
+                    ->hint(fn ($state, $component) => 'Maximum: ' . $component->getMaxLength() - strlen($state) . ' characters')
+                    ->maxlength(100)
+                    ->lazy()
                     ->required(),
                 TextInput::make('price')
                     ->label('Price')
@@ -41,6 +44,26 @@ class MerchResource extends Resource
                     ->stripCharacters(',')
                     ->numeric()
                     ->prefix('Rp'),
+
+                Forms\Components\Select::make('category_id')
+                    ->label('Merch Category')
+                    ->relationship('merchCategory', 'name_category')
+                    ->required(),
+
+                FileUpload::make('merch_cover_front')
+                ->label('Image Merch Cover Front')
+                ->directory('Merch-Cover')
+                ->imageEditor()
+                ->required()
+                ->image(),
+
+                FileUpload::make('merch_cover_back')
+                ->label('Image Merch Cover Back')
+                ->directory('Merch-Cover')
+                ->imageEditor()
+                ->imageEditorMode(2)
+                ->required()
+                ->image(),
                 Repeater::make('merch_size')
                 ->label('Sizes')
                 ->schema([
@@ -58,28 +81,6 @@ class MerchResource extends Resource
                         ->numeric()
                         ->required(),
                 ]),
-                Repeater::make('images')
-                    ->label('Images')
-                    ->schema([
-                        FileUpload::make('image_path')
-                            ->label('Image')
-                            ->disk('public')
-                            ->directory('Merch')
-                            ->imageEditor()
-                            ->imageEditorMode(2)
-                            ->maxFiles(3)
-                            ->image()
-                            ->required(),
-                            
-                    ]),
-                    FileUpload::make('merch_cover')
-                    ->label('Image Merch Cover')
-                    ->disk('public')
-                    ->directory('Merch-Cover')
-                    ->imageEditor()
-                    ->imageEditorMode(2)
-                    ->required()
-                    ->image()
             ]);
     }
 
@@ -95,23 +96,18 @@ class MerchResource extends Resource
                     ->label('Description')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('tag')
-                    ->label('Tag')
+                TextColumn::make('slug_merch')
+                    ->label('Slug')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('stock')
-                    ->label('Stock')
+                TextColumn::make('tag')
+                    ->label('Tag')
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('price')
                     ->label('Price')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('size')
-                    ->label('Size')
-                    ->searchable()
-                    ->sortable(),
-                
             ])
             ->filters([
                 //
